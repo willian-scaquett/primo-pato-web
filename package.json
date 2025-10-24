@@ -1,0 +1,34 @@
+{
+  "name": "primo-pato-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start -p 8080",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@iconify/react": "^6.0.2",
+    "@mui/icons-material": "^7.3.4",
+    "@mui/material": "^7.3.4",
+    "framer-motion": "^12.23.24",
+    "leaflet": "^1.9.4",
+    "next": "15.5.6",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-input-mask": "^2.0.4",
+    "react-leaflet": "^5.0.0",
+    "react-number-format": "^5.4.4"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "24.8.1",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.6",
+    "tailwindcss": "^4"
+  }
+}
