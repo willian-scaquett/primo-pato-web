@@ -1,8 +1,5 @@
-const API_BASE = "http://130.107.74.13:8080";
+const API_BASE = "/api/proxy";
 
-/**
- * Gera headers padrão para requisições, incluindo Authorization se houver token
- */
 function getHeaders(includeAuth = true) {
   const headers = { "Content-Type": "application/json" };
   if (includeAuth && typeof window !== "undefined") {
@@ -12,9 +9,6 @@ function getHeaders(includeAuth = true) {
   return headers;
 }
 
-/**
- * Faz fetch com parsing automático e tratamento de erros
- */
 async function fetchJson(url, options = {}, includeAuth = true) {
   const res = await fetch(url, { ...options, headers: getHeaders(includeAuth) });
   const text = await res.text();
@@ -81,7 +75,7 @@ export function cadastrarUsuario(payload) {
   return fetchJson(`${API_BASE}/usuario/cadastrar`, {
     method: "POST",
     body: JSON.stringify(payload),
-  }, false); // cadastro de usuário não precisa de token
+  }, false);
 }
 
 export function loginUsuario(payload) {
