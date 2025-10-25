@@ -1,9 +1,9 @@
 import { ThemeProvider } from "../theme/ThemeProvider";
 
 export const metadata = {
-  title: "Sistema de Monitoramento de Patos Primordiais",
+  title: "Primo Pato",
   description:
-    "Sistema avançado de monitoramento e classificação para pesquisa de patos primordiais",
+    "Sistema de monitoramento, classificação e captura de patos primordiais para pesquisa",
 };
 
 export default function RootLayout({ children }) {

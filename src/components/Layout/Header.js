@@ -11,6 +11,7 @@ import {
 import {
   ExitToApp as ExitToAppIcon,
 } from "@mui/icons-material";
+import Image from 'next/image';
 
 function Header({
   title = "PRIMO PATO",
@@ -24,7 +25,13 @@ function Header({
         <Box sx={{ display: "flex", alignItems: "center", mr: 4 }}>
           <Typography variant="h6" component="div" sx={{ flexGrow: 0, color: (t) => t.palette.text.primary }}>
             <Button color="inherit" href="/dashboard">
-              {title}
+              <Image
+                src="/logo.png"
+                alt="Logo"
+                width={36}
+                height={36}
+                priority
+              />
             </Button>
           </Typography>
         </Box>

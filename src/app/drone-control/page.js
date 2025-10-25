@@ -157,7 +157,7 @@ function DroneControlContent() {
       
       const efficiencyScore = 300 / rendimento;
       
-      const tripFuelConsumption = Math.min(45, 
+      const tripFuelConsumption = Math.min(30, 
         10 + Math.log10(efficiencyScore + 1) * 14
       );
       
@@ -390,10 +390,10 @@ function DroneControlContent() {
     <Layout>
       <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
         <Typography variant="h4" component="h1" sx={{ mb: 1, color: "#FFFFFF" }}>
-          DRONE CONTROL
+          Missão de Captura
         </Typography>
         <Typography variant="body1" sx={{ mb: 4, color: "#B0B0B0" }}>
-          Controle drones e capture patos a distância.
+          Controle drones a distância e capture patos primordiais.
         </Typography>
 
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 3 }}>
@@ -415,7 +415,7 @@ function DroneControlContent() {
           <Grid size={{ xs: 12, md: 6 }}>
             <Card sx={{ backgroundColor: '#1A2C2C', border: '1px solid #00E0B7', mb: 3 }}>
               <CardContent>
-                <Typography variant="h6" sx={{ color: '#FFFFFF', mb: 2 }}>Métricas</Typography>
+                <Typography variant="h6" sx={{ color: '#FFFFFF', mb: 4 }}>Métricas</Typography>
                 <Box sx={{ mb: 4 }}>
                   <Typography variant="body2" sx={{ color: '#FFFFFF', mb: 0.5 }}>Risco da Missão de Captura</Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -437,16 +437,20 @@ function DroneControlContent() {
                 <Typography variant="h6" sx={{ color: '#FFFFFF', mb: 2 }}>Recomendações</Typography>
                 <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                   <Box>
-                    <Typography variant="body2" sx={{ color: '#B0B0B0' }}>Defesa Recomendada</Typography>
+                    <Typography variant="body2" sx={{ color: '#B0B0B0', mb: 1 }}>Defesa</Typography>
                     <Chip label={classification?.defesaRecomendada || '-'} sx={{ backgroundColor: '#2A3C3C', color: '#FFFFFF', border: '1px solid #00E0B7' }} />
                   </Box>
                   <Box>
-                    <Typography variant="body2" sx={{ color: '#B0B0B0' }}>Arma Recomendada</Typography>
+                    <Typography variant="body2" sx={{ color: '#B0B0B0', mb: 1 }}>Arma</Typography>
                     <Chip label={classification?.armaRecomendada || '-'} sx={{ backgroundColor: '#2A3C3C', color: '#FFFFFF', border: '1px solid #00E0B7' }} />
                   </Box>
                   <Box>
-                    <Typography variant="body2" sx={{ color: '#B0B0B0' }}>Tamanho da Rede</Typography>
+                    <Typography variant="body2" sx={{ color: '#B0B0B0', mb: 1 }}>Tamanho da Rede</Typography>
                     <Chip label={classification?.tamanhoRedeNecessaria || '-'} sx={{ backgroundColor: '#2A3C3C', color: '#FFFFFF', border: '1px solid #00E0B7' }} />
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" sx={{ color: '#B0B0B0', mb: 1 }}>Abordagem</Typography>
+                    <Chip label={classification?.abordagemRecomendada || '-'} sx={{ backgroundColor: '#2A3C3C', color: '#FFFFFF', border: '1px solid #00E0B7' }} />
                   </Box>
                 </Box>
               </CardContent>
@@ -512,7 +516,13 @@ function DroneControlContent() {
                     DRONE PREPARADO!
                   </Typography>
                   <Typography variant="body2" sx={{ color: '#B0B0B0', mb: 2 }}>
-                    A cada ação, você gastará um pouco da bateria do drone. O combustível e bateria também são consumidos durante batalhas. Portanto, seja rápido!
+                      Lembre-se:<br/><br/>
+                      -Durante a fase de batalha, combustível e bateria continuam sendo consumidos.<br/>
+                      -Cada escolha sua consumirá um pouco mais da bateria.<br/>
+                      -O peso do pato influencia diretamente no rendimento do combustível.<br/>
+                      -Apesar dos motores dos drones serem altamente eficientes, com seus tanques<br/>em 4 dimensões praticamente infinitos,
+                      nosso combustível não é infinito (e é caro!).<br/>Portanto, abastecemos apenas o necessário (acreditamos em
+                      suas habilidades)
                     <br/><br/><strong>Boa sorte!</strong>
                   </Typography>
                   <Button variant="contained" onClick={handleStartProtocol} sx={{ color: '#0A1C1C', backgroundColor: '#00E0B7', '&:hover': { backgroundColor: '#00B894' } }}>

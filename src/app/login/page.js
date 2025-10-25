@@ -16,6 +16,7 @@ import {
 import { Layout } from "../../components/Layout/Layout";
 import { useRouter } from "next/navigation";
 import { loginUsuario } from "../../lib/apiClient";
+import Image from "next/image";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -102,6 +103,13 @@ function LoginPage() {
           <CardContent sx={{ p: 4 }}>
             {/* Title */}
             <Box sx={{ textAlign: "center", mb: 4 }}>
+              <Image
+                src="/logo.png"
+                alt="Logo"
+                width={70}
+                height={70}
+                priority
+              />
               <Typography
                 variant="h4"
                 component="h1"
@@ -113,13 +121,13 @@ function LoginPage() {
               >
                 PRIMO PATO
               </Typography>
-              <Typography variant="h6" sx={{ color: "#00E0B7", fontWeight: 500 }}>
-                Sistema de Monitoramento
-              </Typography>
             </Box>
 
             {/* Login Form */}
             <Box component="form" onSubmit={handleSubmit}>
+                <Typography variant="h6" sx={{ textAlign: "center", color: "#00E0B7", fontWeight: 500 }}>
+                  Faça login para capturar patos primordiais
+                </Typography>
               <TextField
                 fullWidth
                 label="E-mail"
