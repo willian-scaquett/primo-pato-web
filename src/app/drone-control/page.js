@@ -40,6 +40,7 @@ function DroneControlContent() {
   const fuelTimerRef = useRef(null);
   const batteryTimerRef = useRef(null);
   const travelIntervalRef = useRef(null);
+  const prevDuckRef = useRef('');
   const [runId, setRunId] = useState(0);
 
   const normalizeCode = (str) => {
@@ -146,13 +147,26 @@ function DroneControlContent() {
     
     if (phase === 1.5 || phase === 4.5) {
       const distance = classification?.distancia || 10;
-      const travelTime = Math.max(3, Math.min(10, distance / 10));
-      const fuelConsumption = Math.min(30, distance / 2);
-      perTick = fuelConsumption / travelTime * (classification && phase === 4.5 ? classification.rendimentoCombustivelIda / classification.rendimentoCombustivelVolta : 1);
-      batteryPerTick = 0.5;
+      const rendimento = phase === 4.5 
+        ? (classification?.rendimentoCombustivelVolta || 10)
+        : (classification?.rendimentoCombustivelIda || 10);
+      
+      const travelTime = Math.max(4, Math.min(6, 
+        4 + (distance / 20000) * 2
+      ));
+      
+      const efficiencyScore = 300 / rendimento;
+      
+      const tripFuelConsumption = Math.min(45, 
+        10 + Math.log10(efficiencyScore + 1) * 14
+      );
+      
+      perTick = tripFuelConsumption / travelTime;
+      batteryPerTick = 1.5;
+      
     } else if (phase === 2 || phase === 3 || phase === 4) {
       perTick = 1;
-      batteryPerTick = 0.3;
+      batteryPerTick = 0.7;
     }
     
     fuelTimerRef.current = setInterval(() => {
@@ -213,16 +227,16 @@ function DroneControlContent() {
   const startGame = () => {
     if (!classification) return;
     resetGameState();
-    setRunId((x) => x + 1);
     setStarted(true);
+    setRunId((x) => x + 1);
   };
 
   useEffect(() => {
-    if (!selectedDuck) return;
-    if (started) {
+    if (selectedDuck !== prevDuckRef.current && started) {
       resetGameState();
       setStarted(false);
     }
+    prevDuckRef.current = selectedDuck;
   }, [selectedDuck, started]);
 
   const handleStartProtocol = () => {
@@ -232,7 +246,7 @@ function DroneControlContent() {
     setMessage('Drone viajando até a localização do pato primordial...');
     
     const distance = classification?.distancia || 10;
-    const travelTime = Math.max(2, Math.min(6, distance / 10));
+    const travelTime = Math.max(2, Math.min(6, distance / 100));
     
     travelIntervalRef.current = setInterval(() => {
       setTravelProgress(prev => {
@@ -261,7 +275,7 @@ function DroneControlContent() {
     const correct = code === recommendedDefense;
     
     setBattery((b) => {
-      const next = Math.max(0, b - 5);
+      const next = Math.max(0, b - 12);
       if (next <= 0) {
         endGame(false, 'Bateria esgotada! O drone foi perdido!');
       }
@@ -391,7 +405,7 @@ function DroneControlContent() {
               ))}
             </Select>
           </FormControl>
-          <Button variant="contained" onClick={startGame} disabled={!classification || loading || ducks.length === 0 || !selectedDuck} sx={{ backgroundColor: '#00E0B7', color: '#0A1C1C','&:hover': { backgroundColor: '#00B894', color: '#0A1C1C' } }}>
+          <Button variant="contained" onClick={startGame} disabled={!classification || loading || ducks.length === 0 || !selectedDuck || started} sx={{ backgroundColor: '#00E0B7', color: '#0A1C1C','&:hover': { backgroundColor: '#00B894', color: '#0A1C1C' } }}>
             Iniciar Missão
           </Button>
           {loading && <Typography sx={{ color: '#B0B0B0' }}>Carregando análise…</Typography>}
@@ -444,26 +458,52 @@ function DroneControlContent() {
           <Card sx={{ backgroundColor: '#1A2C2C', border: '1px solid #00E0B7', mb: 3 }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Box sx={{ flex: 2, mr: 2 }}>
+                <Box sx={{ flex: 3, mr: 2 }}>
                   <Typography variant="body2" sx={{ color: '#FFFFFF', mb: 0.5 }}>Integridade do Drone</Typography>
-                  <LinearProgress variant="determinate" value={life} sx={{ height: 10, borderRadius: 6, backgroundColor: '#2A3C3C', '& .MuiLinearProgress-bar': { backgroundColor: life > 50 ? '#00E0B7' : '#FF6B6B' } }} />
+                  <LinearProgress variant="determinate" value={life} sx={{ height: 10, borderRadius: 6, backgroundColor: '#2A3C3C', '& .MuiLinearProgress-bar': { backgroundColor: life > 40 ? '#00E0B7' : life > 25 ? '#FFA500' : '#FF6B6B' } }} />
                 </Box>
-                <Box sx={{ flex: 2, ml: 2, mr: 2 }}>
-                  <Typography variant="body2" sx={{ color: '#FFFFFF', mb: 0.5 }}>Combustível</Typography>
-                  <LinearProgress variant="determinate" value={fuel} sx={{ height: 10, borderRadius: 6, backgroundColor: '#2A3C3C', '& .MuiLinearProgress-bar': { backgroundColor: fuel > 20 ? '#00E0B7' : '#FF6B6B' } }} />
+                <Box sx={{ flex: 3, ml: 2, mr: 2 }}>
+                  <Typography variant="body2" sx={{ color: '#FFFFFF', mb: 0.5 }}>Combustível (rendendo {classification ? `${new Intl.NumberFormat("pt-BR").format(Number(phase < 4.5 ? classification.rendimentoCombustivelIda : classification.rendimentoCombustivelVolta).toFixed(2))} km/L` : ''})</Typography>
+                  <LinearProgress variant="determinate" value={fuel} sx={{ height: 10, borderRadius: 6, backgroundColor: '#2A3C3C', '& .MuiLinearProgress-bar': { backgroundColor: fuel > 40 ? '#00E0B7' : fuel > 25 ? '#FFA500' : '#FF6B6B' } }} />
                 </Box>
                 <Box sx={{ flex: 1, ml: 2 }}>
                   <Typography variant="body2" sx={{ color: '#FFFFFF', mb: 0.5 }}>Bateria</Typography>
-                  <Chip label={`${battery.toFixed(0)}%`} sx={{ backgroundColor: battery > 20 ? '#FFA500' : '#FF6B6B', color: '#FFFFFF', fontWeight: 'bold' }} />
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ 
+                      position: 'relative', 
+                      width: '60px', 
+                      height: '28px',
+                      border: `2px solid ${battery > 40 ? '#00E0B7' : battery > 25 ? '#FFA500' : '#FF6B6B'}`,
+                      borderRadius: '4px',
+                      backgroundColor: '#2A3C3C',
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '2px'
+                    }}>
+                      <Box sx={{
+                        position: 'absolute',
+                        right: '-6px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        width: '4px',
+                        height: '12px',
+                        backgroundColor: battery > 40 ? '#00E0B7' : battery > 25 ? '#FFA500' : '#FF6B6B',
+                        borderRadius: '0 2px 2px 0'
+                      }} />
+                      <Box sx={{
+                        width: `${battery}%`,
+                        height: '100%',
+                        backgroundColor: battery > 40 ? '#00E0B7' : battery > 25 ? '#FFA500' : '#FF6B6B',
+                        borderRadius: '2px',
+                        transition: 'width 0.3s ease, background-color 0.3s ease'
+                      }} />
+                    </Box>
+                  </Box>
                 </Box>
                 <Box sx={{ flex: 1, ml: 2 }}>
-                  <Typography variant="body2" sx={{ color: '#FFFFFF', mb: 0.5 }}>Rendimento</Typography>
-                  <Chip label={classification ? `${new Intl.NumberFormat("pt-BR").format(Number(phase < 4.5 ? classification.rendimentoCombustivelIda : classification.rendimentoCombustivelVolta).toFixed(2))} km/L` : '-'} sx={{ backgroundColor: '#2A3C3C', color: '#FFFFFF', border: '1px solid #00E0B7' }} />
-                </Box>
-                <Box sx={{ flex: 1, ml: 2 }}>
-                  <Typography variant="body2" sx={{ color: '#FFFFFF', mb: 0.5 }}>Distância a percorrer</Typography>
+                  <Typography variant="body2" sx={{ color: '#FFFFFF', mb: 0.5 }}>Distância</Typography>
                   <Chip label={classification ? `${new Intl.NumberFormat("pt-BR").format(Number((classification.distancia - (travelProgress / 100 * classification.distancia)) * !(phase === 2 || phase === 3 || phase === 4) ).toFixed(2))} km` : '-'} sx={{ backgroundColor: '#2A3C3C', color: '#FFFFFF', border: '1px solid #00E0B7' }} />
-                </Box>  
+                </Box> 
               </Box>
 
               {phase === 1 && (
@@ -472,7 +512,7 @@ function DroneControlContent() {
                     DRONE PREPARADO!
                   </Typography>
                   <Typography variant="body2" sx={{ color: '#B0B0B0', mb: 2 }}>
-                    O combustível e a bateria também são consumidos durante a fase de batalha. Portanto, seja rápido!
+                    A cada ação, você gastará um pouco da bateria do drone. O combustível e bateria também são consumidos durante batalhas. Portanto, seja rápido!
                     <br/><br/><strong>Boa sorte!</strong>
                   </Typography>
                   <Button variant="contained" onClick={handleStartProtocol} sx={{ color: '#0A1C1C', backgroundColor: '#00E0B7', '&:hover': { backgroundColor: '#00B894' } }}>
@@ -600,7 +640,7 @@ function LoadingFallback() {
 
 function DroneControlPage() {
   return (
-    <Suspense fallback={<LoadingFallback />}>
+    <Suspense fallback={<LoadingFallback /> || ''}>
       <DroneControlContent />
     </Suspense>
   );

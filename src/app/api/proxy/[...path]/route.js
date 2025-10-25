@@ -30,8 +30,6 @@ async function proxyRequest(request, params, method) {
     const url = new URL(request.url);
     const targetUrl = `${API_TARGET}/${pathString}${url.search}`;
 
-    console.log(`[Proxy] ${method} ${targetUrl}`);
-
     const headers = {
       'Content-Type': 'application/json',
     };
@@ -59,16 +57,29 @@ async function proxyRequest(request, params, method) {
     let data;
     
     if (contentType.includes('application/json')) {
-      data = await response.json();
+      try {
+        data = await response.json();
+      } catch {
+        data = await response.text();
+      }
     } else {
       data = await response.text();
     }
 
-    console.log(`[Proxy] Status: ${response.status}`);
+    console.log(`[Proxy ${method}] Resposta:`, data);
 
-    return NextResponse.json(data, {
-      status: response.status,
-    });
+    if (response.status === 204) {
+      return new NextResponse(null, { status: 204 });
+    }
+
+    if (response.ok && !data) {
+      return NextResponse.json({ success: true }, { status: response.status });
+    }
+
+    return NextResponse.json(
+      typeof data === 'string' ? { message: data } : data,
+      { status: response.status }
+    );
     
   } catch (error) {
     console.error('[Proxy] Erro:', error);

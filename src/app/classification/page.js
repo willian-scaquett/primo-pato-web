@@ -241,7 +241,6 @@ function ClassificationContent() {
   );
 }
 
-// Componente de fallback para o Suspense
 function LoadingFallback() {
   return (
     <Layout>
@@ -252,7 +251,6 @@ function LoadingFallback() {
   );
 }
 
-// Componente principal exportado
 function ClassificationPage() {
   return (
     <Suspense fallback={<LoadingFallback />}>

@@ -65,7 +65,7 @@ export function SelectableMap({ onLocationSelect, onLoadingChange }) {
         "-";
       const state = address.state || "-";
       const country = address.country || "-";
-      let touristPoint = "";
+      let touristPoint = "-";
 
       try {
         const R = 1200;
@@ -119,7 +119,16 @@ export function SelectableMap({ onLocationSelect, onLoadingChange }) {
 
   return (
     <Box sx={{ height: 280, border: "1px solid #00E0B7", borderRadius: 2, overflow: "hidden", backgroundColor: "#0A1C1C" }}>
-      <MapContainer center={[position.lat, position.lng]} zoom={5} style={{ height: "100%", width: "100%" }} scrollWheelZoom>
+      <MapContainer 
+        center={[position.lat, position.lng]} 
+        zoom={5} 
+        style={{ height: "100%", width: "100%" }} 
+        scrollWheelZoom
+        worldCopyJump={false}
+        maxBounds={[[-90, -180], [90, 180]]}
+        maxBoundsViscosity={1.0}
+        minZoom={2}
+      >
         <TileLayer
           url={tileUrl}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

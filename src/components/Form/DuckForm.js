@@ -314,7 +314,7 @@ export default function DuckForm({
                   onChange={(val) => onChange('droneModel', val)}
                   options={models.map(m => m.value)}
                   label="Modelo do Drone"
-                  placeholder="ex.: DRONE-001"
+                  placeholder="ex.: Drone-001"
                 />
               </Grid>
             </Grid>
@@ -325,7 +325,7 @@ export default function DuckForm({
               onChange={(val) => onChange('droneSerial', val)}
               options={serials.map(m => m.value)}
               label="Número de Série do Drone"
-              placeholder="ex.: ABC123DEF456GH789JKL"
+              placeholder="ex.: X-200"
               sx={{ marginBottom: 3 }}
             />
 
@@ -340,7 +340,7 @@ export default function DuckForm({
                   value={formData.duckHeight}
                   onChange={handleFloatChange('duckHeight')}
                   onBlur={removeComma('duckHeight')}
-                  inputProps={{ inputMode: 'decimal', maxLength: 12 }}
+                  inputProps={{ inputMode: 'decimal', maxLength: 6 }}
                 />
               </Grid>
               <Grid size={6}>
@@ -351,7 +351,7 @@ export default function DuckForm({
                   value={formData.duckWeight}
                   onChange={handleFloatChange('duckWeight')}
                   onBlur={removeComma('duckWeight')}
-                  inputProps={{ inputMode: 'decimal', maxLength: 12  }}
+                  inputProps={{ inputMode: 'decimal', maxLength: 7  }}
                 />
               </Grid>
             </Grid>
@@ -567,7 +567,7 @@ export default function DuckForm({
                     placeholder="ex.: 120"
                     value={formData.bpm}
                     onChange={handleIntegerChange('bpm')}
-                    inputProps={{ maxLength: 255 }}
+                    inputProps={{ maxLength: 4 }}
                   />
                 )}
               </Grid>
@@ -578,7 +578,7 @@ export default function DuckForm({
                   placeholder="ex.: 3"
                   value={formData.mutations}
                   onChange={handleIntegerChange('mutations')}
-                  inputProps={{ maxLength: 255 }}
+                  inputProps={{ maxLength: 4 }}
                 />
               </Grid>
             </Grid>
