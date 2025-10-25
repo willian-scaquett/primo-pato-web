@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const API_TARGET = 'http://130.107.74.13:8080';
+const API_TARGET = 'http://130.107.74.13:8888';
 
 export async function GET(request, { params }) {
   const resolvedParams = await params;
