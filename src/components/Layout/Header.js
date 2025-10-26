@@ -14,7 +14,6 @@ import {
 import Image from 'next/image';
 
 function Header({
-  title = "PRIMO PATO",
   showNavigation = true,
   onLogout,
 }) {

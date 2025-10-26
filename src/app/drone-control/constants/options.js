@@ -6,7 +6,7 @@ export const DEFENSES = [
   { code: 'RADAR_INERCIAL_PREVISIVO', label: 'Radar Inercial Previsivo' },
   { code: 'SENSOR_QUANTICO_FENDAS', label: 'Sensor Quântico de Fendas' },
   { code: 'ALHO', label: 'Alho' },
-  { code: 'ESCUDO_ADAPTATIVO_IA', label: 'Escudo Adaptativo com IA' },
+  { code: 'ESCUDO_ADAPTATIVO_COM_IA', label: 'Escudo Adaptativo com IA' },
   { code: 'NENHUMA', label: 'Não precisa!' },
 ];
 

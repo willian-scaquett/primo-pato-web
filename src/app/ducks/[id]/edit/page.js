@@ -6,7 +6,6 @@ import { useParams, useRouter } from 'next/navigation';
 import { Box, Snackbar, Alert, CircularProgress } from '@mui/material';
 import DuckForm from '../../../../components/Form/DuckForm';
 
-// Dynamic imports
 const Layout = dynamic(() => import('../../../../components/Layout/Layout').then(mod => ({ default: mod.Layout })), {
   ssr: false,
   loading: () => (

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, useEffect, useMemo, useRef } from 'react';
+import React, { Suspense, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
   Box,
   Card,
@@ -44,7 +44,31 @@ function DroneControlContent() {
   const { ducks, selectedDuck, setSelectedDuck, refreshDucks } = useDucks(searchParams);
   const { classification, loading } = useClassification(selectedDuck);
   const gameState = useGameState();
-  
+
+  const {
+    phase,
+    started,
+    runId,
+    travelProgress,
+    life,
+    fuel,
+    battery,
+    noiseCancellerActive,
+    message,
+    result,
+    setResult,
+    setMessage,
+    setPhase,
+    setStarted,
+    setLife,
+    setBattery,
+    setFuel,
+    reset,
+    setTravelProgress,
+    setNoiseCancellerActive,
+    start
+  } = gameState;
+
   const phaseTimerRef = useRef(null);
   const fuelTimerRef = useRef(null);
   const batteryTimerRef = useRef(null);
@@ -58,12 +82,12 @@ function DroneControlContent() {
 
   const currentDistance = useMemo(() => {
     if (!classification) return 0;
-    const inBattle = gameState.phase === PHASES.CHOOSE_DEFENSE || 
-                     gameState.phase === PHASES.CHOOSE_WEAPON || 
-                     gameState.phase === PHASES.CHOOSE_NET;
+    const inBattle = phase === PHASES.CHOOSE_DEFENSE || 
+                     phase === PHASES.CHOOSE_WEAPON || 
+                     phase === PHASES.CHOOSE_NET;
     if (inBattle) return 0;
-    return (classification.distancia - (gameState.travelProgress / 100 * classification.distancia));
-  }, [classification, gameState.phase, gameState.travelProgress]);
+    return (classification.distancia - (travelProgress / 100 * classification.distancia));
+  }, [classification, phase, travelProgress]);
 
   const clearAllTimers = () => {
     if (phaseTimerRef.current) clearTimeout(phaseTimerRef.current);
@@ -72,16 +96,16 @@ function DroneControlContent() {
     if (travelIntervalRef.current) clearInterval(travelIntervalRef.current);
   };
 
-  const endGame = (win, msg) => {
+  const endGame = useCallback((win, msg) => {
     clearAllTimers();
-    gameState.setResult(win ? 'victory' : 'defeat');
-    gameState.setMessage(msg);
-    gameState.setPhase(PHASES.FINISHED);
-    gameState.setStarted(false);
-  };
+    setResult(win ? 'victory' : 'defeat');
+    setMessage(msg);
+    setPhase(PHASES.FINISHED);
+    setStarted(false);
+  }, [setResult, setMessage, setPhase, setStarted]);
 
   const damageOnError = (customMessage) => {
-    gameState.setLife((hp) => {
+    setLife((hp) => {
       const damage = classification ? Math.max(50 * (classification.risco / 100), 1) : 25;
       const nhp = Math.max(0, hp - damage);
       if (nhp <= 0) endGame(false, customMessage || 'Dano crítico! O drone foi destruído!');
@@ -90,7 +114,7 @@ function DroneControlContent() {
   };
 
   const consumeBattery = (amount) => {
-    gameState.setBattery((b) => {
+    setBattery((b) => {
       const next = Math.max(0, b - amount);
       if (next <= 0) {
         endGame(false, 'Bateria esgotada! O drone foi perdido!');
@@ -100,7 +124,7 @@ function DroneControlContent() {
   };
 
   useEffect(() => {
-    if (!gameState.started || gameState.phase === PHASES.READY || gameState.phase === PHASES.FINISHED) {
+    if (!started || phase === PHASES.READY || phase === PHASES.FINISHED) {
       clearAllTimers();
       return;
     }
@@ -111,13 +135,13 @@ function DroneControlContent() {
     let fuelPerTick;
     let batteryPerTick;
     
-    if (gameState.phase === PHASES.TRAVELING_TO || gameState.phase === PHASES.RETURNING) {
+    if (phase === PHASES.TRAVELING_TO || phase === PHASES.RETURNING) {
       const distance = classification?.distancia || 10;
-      const efficiency = gameState.phase === PHASES.RETURNING 
+      const efficiency = phase === PHASES.RETURNING 
         ? (classification?.rendimentoCombustivelVolta || 10)
         : (classification?.rendimentoCombustivelIda || 10);
       
-      const travelTime = gameState.phase === PHASES.RETURNING 
+      const travelTime = phase === PHASES.RETURNING 
         ? calculateReturnTravelTime(distance)
         : calculateTravelTime(distance);
       
@@ -125,9 +149,9 @@ function DroneControlContent() {
       fuelPerTick = tripFuelConsumption / travelTime;
       batteryPerTick = 1.5;
       
-    } else if (gameState.phase === PHASES.CHOOSE_DEFENSE || 
-               gameState.phase === PHASES.CHOOSE_WEAPON || 
-               gameState.phase === PHASES.CHOOSE_NET) {
+    } else if (phase === PHASES.CHOOSE_DEFENSE || 
+               phase === PHASES.CHOOSE_WEAPON || 
+               phase === PHASES.CHOOSE_NET) {
       fuelPerTick = 1;
       
       let noiseCancellerDrain = 0;
@@ -141,7 +165,7 @@ function DroneControlContent() {
     }
     
     fuelTimerRef.current = setInterval(() => {
-      gameState.setFuel((f) => {
+      setFuel((f) => {
         const next = Math.max(0, f - fuelPerTick);
         if (next <= 0) {
           clearAllTimers();
@@ -152,7 +176,7 @@ function DroneControlContent() {
     }, 1000);
 
     batteryTimerRef.current = setInterval(() => {
-      gameState.setBattery((b) => {
+      setBattery((b) => {
         const next = Math.max(0, b - batteryPerTick);
         if (next <= 0) {
           clearAllTimers();
@@ -166,35 +190,35 @@ function DroneControlContent() {
       if (fuelTimerRef.current) clearInterval(fuelTimerRef.current);
       if (batteryTimerRef.current) clearInterval(batteryTimerRef.current);
     };
-  }, [gameState.started, gameState.phase, gameState.runId, classification, recommendedApproach]);
+  }, [started, phase, runId, classification, recommendedApproach, endGame, setFuel, setBattery]); // <-- CORREÇÃO 2
 
   useEffect(() => {
-    if (selectedDuck !== prevDuckRef.current && gameState.started) {
+    if (selectedDuck !== prevDuckRef.current && started) {
       clearAllTimers();
-      gameState.reset();
-      gameState.setStarted(false);
+      reset();
+      setStarted(false);
     }
     prevDuckRef.current = selectedDuck;
-  }, [selectedDuck, gameState.started]);
+  }, [selectedDuck, started, reset, setStarted]); // <-- CORREÇÃO 3
 
   const handleStartProtocol = () => {
-    if (gameState.phase !== PHASES.READY) return;
-    gameState.setPhase(PHASES.TRAVELING_TO);
-    gameState.setTravelProgress(0);
-    gameState.setMessage('Drone viajando até a localização do pato primordial...');
+    if (phase !== PHASES.READY) return;
+    setPhase(PHASES.TRAVELING_TO);
+    setTravelProgress(0);
+    setMessage('Drone viajando até a localização do pato primordial...');
     
     const distance = classification?.distancia || 10;
     const travelTime = Math.max(2, Math.min(6, distance / 100));
     
     travelIntervalRef.current = setInterval(() => {
-      gameState.setTravelProgress(prev => {
+      setTravelProgress(prev => {
         const next = prev + (100 / (travelTime * 10));
         if (next >= 100) {
           clearInterval(travelIntervalRef.current);
-          gameState.setPhase(PHASES.CHOOSE_DEFENSE);
-          gameState.setMessage('Pato avistado! Prepare-se para a peleja!');
-          gameState.setTravelProgress(0);
-          gameState.setNoiseCancellerActive(true);
+          setPhase(PHASES.CHOOSE_DEFENSE);
+          setMessage('Pato avistado! Prepare-se para a peleja!');
+          setTravelProgress(0);
+          setNoiseCancellerActive(true);
         }
         return Math.min(100, next);
       });
@@ -202,7 +226,9 @@ function DroneControlContent() {
   };
 
   const handleDefenseChoice = (code) => {
-    if (gameState.phase !== PHASES.CHOOSE_DEFENSE) return;
+    if (phase !== PHASES.CHOOSE_DEFENSE) return;
+    console.log(code);
+    console.log(recommendedDefense);
     const correct = code === recommendedDefense;
     
     consumeBattery(BATTERY_COST.DEFENSE);
@@ -210,60 +236,60 @@ function DroneControlContent() {
     if (!correct) {
       if (recommendedApproach === 'COMBATIVO') {
         damageOnError('Dano crítico! O drone foi destruído!');
-        gameState.setMessage('Defesa incorreta! O pato ataca.');
+        setMessage('Defesa incorreta! O pato ataca.');
       } else {
-        gameState.setMessage('Defesa incorreta! O pato não nos notou, mas cuidado com a bateria!');
+        setMessage('Defesa incorreta! O pato não nos notou, mas cuidado com a bateria!');
       }
     } else {
-      gameState.setMessage('Defesa escolhida com sucesso!');
-      gameState.setPhase(PHASES.CHOOSE_WEAPON);
+      setMessage('Defesa escolhida com sucesso!');
+      setPhase(PHASES.CHOOSE_WEAPON);
     }
   };
 
   const handleWeaponChoice = (code) => {
-    if (gameState.phase !== PHASES.CHOOSE_WEAPON) return;
+    if (phase !== PHASES.CHOOSE_WEAPON) return;
     const correct = code === recommendedWeapon;
     
     consumeBattery(BATTERY_COST.WEAPON);
     
     if (!correct) {
       damageOnError('Dano crítico! O drone foi destruído!');
-      gameState.setMessage(`Arma ineficaz! O pato${recommendedApproach !== 'COMBATIVO' ? ', em meio aos seus sonhos de hibernação,' : ''} contra-ataca.`);
+      setMessage(`Arma ineficaz! O pato${recommendedApproach !== 'COMBATIVO' ? ', em meio aos seus sonhos de hibernação,' : ''} contra-ataca.`);
     } else {
-      gameState.setMessage('Ataque efetivo. Vamos conseguir capturar o pato!');
-      gameState.setPhase(PHASES.CHOOSE_NET);
+      setMessage('Ataque efetivo. Vamos conseguir capturar o pato!');
+      setPhase(PHASES.CHOOSE_NET);
     }
   };
 
   const handleNetChoice = (code) => {
-    if (gameState.phase !== PHASES.CHOOSE_NET) return;
+    if (phase !== PHASES.CHOOSE_NET) return;
     const correct = code === recommendedNet;
     
     consumeBattery(BATTERY_COST.NET);
     
     if (!correct) {
       damageOnError('Dano crítico! O drone foi perdido!');
-      gameState.setMessage(`Rede inadequada! O pato${recommendedApproach !== 'COMBATIVO' ? ', em meio aos seus sonhos de hibernação,' : ''} contra-ataca.`);
+      setMessage(`Rede inadequada! O pato${recommendedApproach !== 'COMBATIVO' ? ', em meio aos seus sonhos de hibernação,' : ''} contra-ataca.`);
     } else {
-      gameState.setMessage('Rede lançada com sucesso! O pato foi capturado!');
-      gameState.setPhase(PHASES.RETURNING);
-      gameState.setTravelProgress(0);
-      gameState.setNoiseCancellerActive(false);
+      setMessage('Rede lançada com sucesso! O pato foi capturado!');
+      setPhase(PHASES.RETURNING);
+      setTravelProgress(0);
+      setNoiseCancellerActive(false);
       
       const distance = classification?.distancia || 10;
       const travelTime = calculateReturnTravelTime(distance);
       
       travelIntervalRef.current = setInterval(() => {
-        gameState.setTravelProgress(prev => {
+        setTravelProgress(prev => {
           const next = prev + (100 / (travelTime * 10));
           if (next >= 100) {
             clearInterval(travelIntervalRef.current);
             
-            gameState.setFuel(currentFuel => {
+            setFuel(currentFuel => {
               if (currentFuel <= 0) {
                 endGame(false, 'Combustível esgotado! O Drone foi perdido.');
               } else {
-                gameState.setBattery(currentBattery => {
+                setBattery(currentBattery => {
                   if (currentBattery <= 0) {
                     endGame(false, 'Bateria esgotada! O Drone foi perdido.');
                   } else {
@@ -274,7 +300,7 @@ function DroneControlContent() {
               }
               return currentFuel;
             });
-            gameState.setTravelProgress(0);
+            setTravelProgress(0);
           }
           return Math.min(100, next);
         });
@@ -283,7 +309,7 @@ function DroneControlContent() {
   };
 
   const finishMission = async (success) => {
-    const win = gameState.life > 0 && gameState.fuel > 0 && gameState.battery > 0 && success;
+    const win = life > 0 && fuel > 0 && battery > 0 && success;
     
     if (win) {
       endGame(true, 'Sucesso! Pato Capturado!');
@@ -323,8 +349,8 @@ function DroneControlContent() {
           </FormControl>
           <Button 
             variant="contained" 
-            onClick={gameState.start} 
-            disabled={!classification || loading || ducks.length === 0 || !selectedDuck || gameState.started} 
+            onClick={start} 
+            disabled={!classification || loading || ducks.length === 0 || !selectedDuck || started} 
           >
             Iniciar Missão
           </Button>
@@ -340,7 +366,7 @@ function DroneControlContent() {
           </Grid>
         </Grid>
 
-        {gameState.started && (
+        {started && (
           <Card sx={{ 
             backgroundColor: '#1A2C2C', 
             border: '1px solid #00E0B7', 
@@ -350,12 +376,12 @@ function DroneControlContent() {
           }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <StatusBar label="Integridade do Drone" value={gameState.life} />
+                <StatusBar label="Integridade do Drone" value={life} />
                 <StatusBar 
-                  label={`Combustível (rendendo ${classification ? `${formatDistance(gameState.phase < PHASES.RETURNING ? classification.rendimentoCombustivelIda : classification.rendimentoCombustivelVolta)} km/L` : ''})`} 
-                  value={gameState.fuel} 
+                  label={`Combustível (rendendo ${classification ? `${formatDistance(phase < PHASES.RETURNING ? classification.rendimentoCombustivelIda : classification.rendimentoCombustivelVolta)} km/L` : ''})`} 
+                  value={fuel} 
                 />
-                <BatteryIndicator battery={gameState.battery} />
+                <BatteryIndicator battery={battery} />
                 <Box sx={{ flex: 1, ml: 2 }}>
                   <Typography variant="body2" sx={{ color: '#FFFFFF', mb: 0.5 }}>Distância</Typography>
                   <Chip 
@@ -366,19 +392,19 @@ function DroneControlContent() {
               </Box>
 
               <NoiseCancellerIndicator 
-                active={gameState.noiseCancellerActive} 
+                active={noiseCancellerActive} 
                 approach={recommendedApproach} 
               />
 
-              {gameState.phase === PHASES.READY && (
+              {phase === PHASES.READY && (
                 <PhaseReady onStart={handleStartProtocol} />
               )}
               
-              {gameState.phase === PHASES.TRAVELING_TO && (
-                <PhaseTraveling progress={gameState.travelProgress} isReturn={false} />
+              {phase === PHASES.TRAVELING_TO && (
+                <PhaseTraveling progress={travelProgress} isReturn={false} />
               )}
               
-              {gameState.phase === PHASES.CHOOSE_DEFENSE && (
+              {phase === PHASES.CHOOSE_DEFENSE && (
                 <PhaseChoice
                   title="O MELHOR ATAQUE É UMA DEFESA FORTE!"
                   text="Antes de atacarmos, escolha a melhor DEFESA contra o pato alvo."
@@ -387,7 +413,7 @@ function DroneControlContent() {
                 />
               )}
               
-              {gameState.phase === PHASES.CHOOSE_WEAPON && (
+              {phase === PHASES.CHOOSE_WEAPON && (
                 <PhaseChoice
                   title="A MELHOR DEFESA É ATACAR COM MAIS FORÇA!"
                   text="Escolha a ARMA que será mais eficiente contra o pato alvo"
@@ -396,7 +422,7 @@ function DroneControlContent() {
                 />
               )}
               
-              {gameState.phase === PHASES.CHOOSE_NET && (
+              {phase === PHASES.CHOOSE_NET && (
                 <PhaseChoice
                   title="ESTAMOS QUASE LÁ!"
                   text="O pato está quase no papo, mas precisamos trazê-lo para a base. Prepare a rede do TAMANHO adequado para sua captura."
@@ -405,25 +431,25 @@ function DroneControlContent() {
                 />
               )}
               
-              {gameState.phase === PHASES.RETURNING && (
-                <PhaseTraveling progress={gameState.travelProgress} isReturn={true} />
+              {phase === PHASES.RETURNING && (
+                <PhaseTraveling progress={travelProgress} isReturn={true} />
               )}
 
-              {!!gameState.message && (
+              {!!message && (
                 <Typography variant="body2" sx={{ bottom: 0, color: '#B0B0B0', mt: 2, textAlign: 'center' }}>
-                  {gameState.message}
+                  {message}
                 </Typography>
               )}
             </CardContent>
           </Card>
         )}
 
-        {gameState.result && (
+        {result && (
           <ResultCard 
-            result={gameState.result} 
-            life={gameState.life} 
-            battery={gameState.battery} 
-            onRetry={gameState.start} 
+            result={result} 
+            life={life} 
+            battery={battery} 
+            onRetry={start} 
           />
         )}
       </Box>

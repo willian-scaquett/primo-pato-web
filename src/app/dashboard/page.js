@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import {
   Box,
@@ -6,7 +7,6 @@ import {
   Grid,
   Card,
   CardContent,
-  Skeleton,
 } from "@mui/material";
 import { Layout } from "../../components/Layout/Layout";
 import {
