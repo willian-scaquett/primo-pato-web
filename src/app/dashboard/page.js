@@ -1,5 +1,4 @@
 "use client";
-
 import React from "react";
 import {
   Box,
@@ -7,6 +6,7 @@ import {
   Grid,
   Card,
   CardContent,
+  Skeleton,
 } from "@mui/material";
 import { Layout } from "../../components/Layout/Layout";
 import {
@@ -19,13 +19,13 @@ function DashboardPage() {
     {
       title: "Registro de Dados",
       description: "Registre dados de patos primordiais coletados por drones",
-      icon: <Icon icon="mdi:content-save-plus" width="40" height="40" color="#00E0B7" />,
+      icon: <Icon icon="mdi:content-save-plus" width="40" height="40" color="#00E0B7" style={{ display: 'inline-block' }} />,
       href: "/data-registration",
     },
     {
       title: "Controle de Patos",
       description: "Gerencie e manipule os patos primordiais cadastrados.",
-      icon: <Icon icon="mdi:duck" width="40" height="40" color="#00E0B7" />,
+      icon: <Icon icon="mdi:duck" width="40" height="40" color="#00E0B7" style={{ display: 'inline-block' }} />,
       href: "/ducks",
     },
     {
@@ -37,7 +37,7 @@ function DashboardPage() {
     {
       title: "Missão de Captura",
       description: "Capture os patos primordiais com os equipamentos recomendados.",
-      icon: <Icon icon="mdi:target-arrow" width="40" height="40" color="#00E0B7" />,
+      icon: <Icon icon="mdi:target-arrow" width="40" height="40" color="#00E0B7" style={{ display: 'inline-block' }} />,
       href: "/drone-control",
     },
   ];
@@ -77,7 +77,9 @@ function DashboardPage() {
                 }}
               >
                 <CardContent sx={{ flexGrow: 1, textAlign: "center", p: 3 }}>
-                  <Box sx={{ mb: 2 }}>{feature.icon}</Box>
+                  <Box sx={{ mb: 2, minHeight: 40, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    {feature.icon}
+                  </Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>
                     {feature.title}
                   </Typography>
