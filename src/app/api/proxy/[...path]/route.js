@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const API_TARGET = 'http://130.107.74.13:8888';
+const API_TARGET = process.env.API_URL;
 
 export async function GET(request, { params }) {
   const resolvedParams = await params;
@@ -24,16 +24,19 @@ export async function DELETE(request, { params }) {
 
 async function proxyRequest(request, params, method) {
   try {
+    if (!API_TARGET) {
+      throw new Error('API_URL não está configurada no .env');
+    }
+
     const pathArray = params.path || [];
     const pathString = Array.isArray(pathArray) ? pathArray.join('/') : pathArray;
-    
     const url = new URL(request.url);
     const targetUrl = `${API_TARGET}/${pathString}${url.search}`;
 
     const headers = {
       'Content-Type': 'application/json',
     };
-    
+
     const authHeader = request.headers.get('authorization');
     if (authHeader) {
       headers['Authorization'] = authHeader;
@@ -52,10 +55,9 @@ async function proxyRequest(request, params, method) {
     }
 
     const response = await fetch(targetUrl, fetchOptions);
-    
     const contentType = response.headers.get('content-type') || '';
+
     let data;
-    
     if (contentType.includes('application/json')) {
       try {
         data = await response.json();
@@ -80,7 +82,6 @@ async function proxyRequest(request, params, method) {
       typeof data === 'string' ? { message: data } : data,
       { status: response.status }
     );
-    
   } catch (error) {
     console.error('[Proxy] Erro:', error);
     return NextResponse.json(
