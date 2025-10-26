@@ -39,7 +39,6 @@ function ClassificationContent() {
     return Number.isNaN(n) ? null : n;
   };
 
-  // Load ducks and preselect
   useEffect(() => {
     (async () => {
       try {
@@ -182,13 +181,11 @@ function ClassificationContent() {
               variant="contained"
               onClick={() => router.push(selectedDuck ? `/drone-control?id=${selectedDuck}` : "/drone-control")}
               disabled={isCaptured || !selectedDuck}
-              sx={{ backgroundColor: isCaptured ? "#2A3C3C" : "#00E0B7", color: isCaptured ? "#777" : "#0A1C1C", "&:hover": { backgroundColor: isCaptured ? "#2A3C3C" : "#00B894" }}}
             >
               Capturar
             </Button>
           </Grid>
 
-          {/* Métricas (direita) */}
           <Grid size={{ xs: 12, md: 6 }}>
             <Typography variant="h6" sx={{ mb: 2, color: "#FFFFFF" }}>
               Classificação

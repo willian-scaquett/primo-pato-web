@@ -90,13 +90,6 @@ function DashboardPage() {
                   <Button
                     variant="contained"
                     href={feature.href}
-                    sx={{
-                      backgroundColor: "#00E0B7",
-                      color: "#0A1C1C",
-                      "&:hover": {
-                        backgroundColor: "#00B894",
-                      },
-                    }}
                   >
                     Acessar
                   </Button>

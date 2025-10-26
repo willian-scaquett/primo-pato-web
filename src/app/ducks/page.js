@@ -133,7 +133,6 @@ function DucksPage() {
           Visualize, edite ou apague as informações dos patos primordiais cadastrados.
         </Typography>
 
-        {/* Busca */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
       <TextField
         placeholder="Digite o que você procura"
@@ -224,7 +223,6 @@ function DucksPage() {
                     borderBottom: "1px solid #00E0B7",
                   }}
                 >
-                  {/* ID */}
                   <TableCell sx={{ color: "#FFFFFF", borderBottom: "1px solid #00E0B7" }}>
                     <Tooltip
                       title={
@@ -245,7 +243,6 @@ function DucksPage() {
                     </Tooltip>
                   </TableCell>
 
-                  {/* Drone */}
                   <TableCell sx={{ color: "#FFFFFF", borderBottom: "1px solid #00E0B7" }}>
                     <Tooltip
                       title={
@@ -276,7 +273,6 @@ function DucksPage() {
                     </Tooltip>
                   </TableCell>
 
-                  {/* Local */}
                   <TableCell sx={{ color: "#FFFFFF", borderBottom: "1px solid #00E0B7" }}>
                     <Tooltip
                       title={
@@ -297,7 +293,6 @@ function DucksPage() {
                     </Tooltip>
                   </TableCell>
 
-                  {/* Capturado */}
                   <TableCell sx={{ color: "#FFFFFF", borderBottom: "1px solid #00E0B7" }}>
                     <Chip
                       label={duck.capturado ? "Sim" : "Não"}
@@ -309,7 +304,6 @@ function DucksPage() {
                     />
                   </TableCell>
 
-                  {/* Ações */}
                   <TableCell sx={{ borderBottom: "1px solid #00E0B7" }}>
                     <Box sx={{ display: "flex", gap: 1 }}>
                       <Tooltip title="Ver classificação">

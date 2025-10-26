@@ -66,7 +66,6 @@ function RegisterPage() {
 
   return (
     <Layout showHeader={false} noPadding noScroll>
-      {/* Background full-viewport fixed */}
       <Box
         sx={{
           position: "fixed",
@@ -79,7 +78,6 @@ function RegisterPage() {
         }}
       />
 
-      {/* Overlay para contraste fixo dark */}
       <Box
         sx={{
           position: "fixed",
@@ -114,7 +112,6 @@ function RegisterPage() {
           }}
         >
           <CardContent sx={{ p: 4 }}>
-            {/* Title */}
             <Box sx={{ textAlign: "center", mb: 4 }}>
               <Typography
                 variant="h4"
@@ -132,7 +129,6 @@ function RegisterPage() {
               </Typography>
             </Box>
 
-            {/* Registration Form */}
             <Box component="form" onSubmit={handleSubmit}>
               <TextField
                 fullWidth

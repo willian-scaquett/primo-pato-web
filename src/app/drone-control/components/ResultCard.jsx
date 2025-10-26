@@ -32,11 +32,7 @@ export const ResultCard = ({ result, life, battery, onRetry }) => (
       </Typography>
 
       {result === 'defeat' && (
-        <Button variant="contained" onClick={onRetry} sx={{
-          color: '#0A1C1C',
-          backgroundColor: '#00E0B7',
-          '&:hover': { backgroundColor: '#00B894' },
-        }}>
+        <Button variant="contained" onClick={onRetry}>
           Tentar novamente
         </Button>
       )}

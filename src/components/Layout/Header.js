@@ -21,7 +21,6 @@ function Header({
   return (
     <AppBar position="static" elevation={0}>
       <Toolbar>
-        {/* Logo */}
         <Box sx={{ display: "flex", alignItems: "center", mr: 4 }}>
           <Typography variant="h6" component="div" sx={{ flexGrow: 0, color: (t) => t.palette.text.primary }}>
             <Button color="inherit" href="/dashboard">
@@ -36,7 +35,6 @@ function Header({
           </Typography>
         </Box>
 
-        {/* Navigation */}
         {showNavigation && (
           <Box sx={{ display: "flex", gap: 2, mr: "auto" }}>
             <Button color="inherit" href="/data-registration">
@@ -54,7 +52,6 @@ function Header({
           </Box>
         )}
 
-        {/* Right side controls */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           {onLogout && (
             <Button color="inherit" onClick={onLogout} startIcon={<ExitToAppIcon />}>Logout</Button>

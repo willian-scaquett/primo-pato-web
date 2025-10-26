@@ -325,11 +325,6 @@ function DroneControlContent() {
             variant="contained" 
             onClick={gameState.start} 
             disabled={!classification || loading || ducks.length === 0 || !selectedDuck || gameState.started} 
-            sx={{ 
-              backgroundColor: '#00E0B7', 
-              color: '#0A1C1C',
-              '&:hover': { backgroundColor: '#00B894', color: '#0A1C1C' } 
-            }}
           >
             Iniciar Missão
           </Button>

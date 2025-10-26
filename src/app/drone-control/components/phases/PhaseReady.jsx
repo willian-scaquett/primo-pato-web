@@ -26,11 +26,6 @@ export const PhaseReady = ({ onStart }) => (
     <Button 
       variant="contained" 
       onClick={onStart} 
-      sx={{ 
-        color: '#0A1C1C', 
-        backgroundColor: '#00E0B7', 
-        '&:hover': { backgroundColor: '#00B894' } 
-      }}
     >
       Iniciar viagem
     </Button>

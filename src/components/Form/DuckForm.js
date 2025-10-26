@@ -277,7 +277,6 @@ export default function DuckForm({
       <Card sx={{ backgroundColor: '#1A2C2C', border: '1px solid #00E0B7', position: 'relative' }}>
         <CardContent sx={{ p: 4 }}>
           <Box component="form" onSubmit={handleSubmit}>
-            {/* Informações do Drone */}
             <Typography variant="h6" sx={{ mb: 3, color: '#FFFFFF' }}>
               Informações do Drone
             </Typography>
@@ -329,7 +328,6 @@ export default function DuckForm({
               sx={{ marginBottom: 3 }}
             />
 
-            {/* Altura e Peso do Pato */}
             <Grid container spacing={2} sx={{ mb: 3 }}>
               <Grid size={6}>
                 <TextField
@@ -356,7 +354,6 @@ export default function DuckForm({
               </Grid>
             </Grid>
 
-            {/* Localização */}
             <Grid container spacing={2} sx={{ mb: 3 }}>
               <Grid size={12}>
                 <Typography variant="h6" sx={{ mb: 1, color: '#FFFFFF' }}>
@@ -513,7 +510,6 @@ export default function DuckForm({
               </Grid>
             </Grid>
 
-            {/* Estado de Hibernação */}
             <Box sx={{ mb: 2 }}>
               <FormLabel sx={{ color: '#FFFFFF', mb: 1, display: 'block' }}>
               </FormLabel>
@@ -546,7 +542,6 @@ export default function DuckForm({
               </RadioGroup>
             </Box>
 
-            {/* BPM e Número de Mutações */}
             <Grid container spacing={2} sx={{ mb: 2 }}>
               <Grid size={6}>
                 {!isHibernating ? (
@@ -583,7 +578,6 @@ export default function DuckForm({
               </Grid>
             </Grid>
 
-            {/* Superpoder */}
             <Grid container spacing={2} sx={{ mb: 2 }}>
               <Grid size={6}>
                 {isHibernating ? (
@@ -636,16 +630,10 @@ export default function DuckForm({
               </Grid>
             </Grid>
 
-            {/* Botão Salvar */}
             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
               <Button
                 type="submit"
                 variant="contained"
-                sx={{
-                  backgroundColor: '#00E0B7',
-                  '&:hover': { backgroundColor: '#00B894' },
-                  color: '#0A1C1C'
-                }}
                 disabled={submitting || !payloadComplete}
               >
                 {submitting ? 'Salvando...' : submitButtonText}

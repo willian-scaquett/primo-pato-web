@@ -53,7 +53,6 @@ function LoginPage() {
 
   return (
     <Layout showHeader={false} noPadding noScroll>
-      {/* Background full-viewport fixed */}
       <Box
         sx={{
           position: "fixed",
@@ -66,7 +65,6 @@ function LoginPage() {
         }}
       />
 
-      {/* Overlay para contraste fixo dark */}
       <Box
         sx={{
           position: "fixed",
@@ -101,7 +99,6 @@ function LoginPage() {
           }}
         >
           <CardContent sx={{ p: 4 }}>
-            {/* Title */}
             <Box sx={{ textAlign: "center", mb: 4 }}>
               <Image
                 src="/logo.png"
@@ -123,7 +120,6 @@ function LoginPage() {
               </Typography>
             </Box>
 
-            {/* Login Form */}
             <Box component="form" onSubmit={handleSubmit}>
                 <Typography variant="h6" sx={{ textAlign: "center", color: "#00E0B7", fontWeight: 500 }}>
                   Faça login para capturar patos primordiais

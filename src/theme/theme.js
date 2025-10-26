@@ -82,7 +82,7 @@ const theme = createTheme({
         },
         contained: {
           backgroundColor: "#00E0B7",
-          color: "#FFFFFF",
+          color: "#0A1C1C",
           "&:hover": {
             backgroundColor: "#00B894",
           },
