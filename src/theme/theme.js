@@ -4,18 +4,18 @@ const theme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: "#00E0B7", // Teal bright
+      main: "#00E0B7",
       light: "#4AFFE8",
       dark: "#00B894",
     },
     secondary: {
-      main: "#1A2C2C", // Dark teal
+      main: "#1A2C2C", 
       light: "#2A3C3C",
       dark: "#0A1C1C",
     },
     background: {
-      default: "#0A1C1C", // Very dark teal
-      paper: "#1A2C2C", // Dark teal
+      default: "#0A1C1C",
+      paper: "#1A2C2C", 
     },
     text: {
       primary: "#FFFFFF",
