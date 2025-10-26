@@ -48,7 +48,6 @@ function RegisterPage() {
     }
     setSubmitting(true);
     try {
-      // Schema baseado no swagger do usuário: nome, email, senha
       const payload = {
         nome: formData.fullName,
         usuario: formData.email,

@@ -6,7 +6,6 @@ import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
-// Carrega React-Leaflet apenas no client
 const MapContainer = dynamic(() => import("react-leaflet").then(m => m.MapContainer), { ssr: false });
 const TileLayer = dynamic(() => import("react-leaflet").then(m => m.TileLayer), { ssr: false });
 const Marker = dynamic(() => import("react-leaflet").then(m => m.Marker), { ssr: false });
@@ -93,9 +92,7 @@ export function SelectableMap({ onLocationSelect, onLoadingChange }) {
           .sort((a, b) => (b.tags.name?.length || 0) - (a.tags.name?.length || 0))[0];
 
         touristPoint = best?.tags?.name || "-";
-      } catch {
-        // ignora
-      }
+      } catch {}
 
       onLocationSelect?.({
         latitude: latlng.lat.toFixed(6),

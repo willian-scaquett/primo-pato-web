@@ -70,6 +70,10 @@ export function buscarEstadosHibernacao() {
   return fetchJson(`${API_BASE}/pato/estadohibernacao`);
 }
 
+export function buscarEstatisticasPatos() {
+  return fetchJson(`${API_BASE}/pato/estatistica`);
+}
+
 // ========================== API USUÁRIO ==========================
 export function cadastrarUsuario(payload) {
   return fetchJson(`${API_BASE}/usuario/cadastrar`, {

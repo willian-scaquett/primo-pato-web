@@ -190,7 +190,7 @@ function DroneControlContent() {
       if (fuelTimerRef.current) clearInterval(fuelTimerRef.current);
       if (batteryTimerRef.current) clearInterval(batteryTimerRef.current);
     };
-  }, [started, phase, runId, classification, recommendedApproach, endGame, setFuel, setBattery]); // <-- CORREÇÃO 2
+  }, [started, phase, runId, classification, recommendedApproach, endGame, setFuel, setBattery]);
 
   useEffect(() => {
     if (selectedDuck !== prevDuckRef.current && started) {
@@ -199,7 +199,7 @@ function DroneControlContent() {
       setStarted(false);
     }
     prevDuckRef.current = selectedDuck;
-  }, [selectedDuck, started, reset, setStarted]); // <-- CORREÇÃO 3
+  }, [selectedDuck, started, reset, setStarted]);
 
   const handleStartProtocol = () => {
     if (phase !== PHASES.READY) return;

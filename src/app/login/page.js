@@ -34,10 +34,8 @@ function LoginPage() {
     }
     setSubmitting(true);
     try {
-      // Swagger indica login com 'usuario' e 'senha'
       const payload = { usuario: email, senha: password };
       const data = await loginUsuario(payload);
-      // API retorna token; armazenar e redirecionar
       const token = (typeof data === 'string') ? data : (data?.token || data?.accessToken || data);
       if (token) {
         sessionStorage.setItem("auth_token", String(token));
