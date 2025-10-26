@@ -4,10 +4,9 @@ import React from "react";
 import {
   Box,
   Typography,
-  Grid as Grid,
+  Grid,
   Card,
   CardContent,
-  Button,
 } from "@mui/material";
 import { Layout } from "../../components/Layout/Layout";
 import {
@@ -49,7 +48,7 @@ function DashboardPage() {
         <Typography
           variant="h3"
           component="h1"
-          sx={{ mb: 2, color: "#FFFFFF", textAlign: "center" }}
+          sx={{ mb: 2, textAlign: "center" }}
         >
           Bem-vindo ao Primo Pato
         </Typography>
@@ -60,18 +59,16 @@ function DashboardPage() {
           Sistema de monitoramento, classificação e captura de
           patos primordiais para pesquisa
         </Typography>
-
         <Grid container spacing={3}>
           {features.map((feature, index) => (
             <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
               <Card
+                component="a"
+                href={feature.href}
                 sx={{
-                  backgroundColor: "#1A2C2C",
-                  border: "1px solid #00E0B7",
-                  borderRadius: "12px",
-                  height: "100%",
                   display: "flex",
-                  flexDirection: "column",
+                  textDecoration: "none",
+                  cursor: "pointer",
                   transition: "transform 0.2s, box-shadow 0.2s",
                   "&:hover": {
                     transform: "translateY(-4px)",
@@ -81,18 +78,12 @@ function DashboardPage() {
               >
                 <CardContent sx={{ flexGrow: 1, textAlign: "center", p: 3 }}>
                   <Box sx={{ mb: 2 }}>{feature.icon}</Box>
-                  <Typography variant="h6" sx={{ color: "#FFFFFF", mb: 1 }}>
+                  <Typography variant="h6" sx={{ mb: 1 }}>
                     {feature.title}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: "#B0B0B0", mb: 3 }}>
+                  <Typography variant="body2">
                     {feature.description}
                   </Typography>
-                  <Button
-                    variant="contained"
-                    href={feature.href}
-                  >
-                    Acessar
-                  </Button>
                 </CardContent>
               </Card>
             </Grid>
