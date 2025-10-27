@@ -232,7 +232,8 @@ function LoginPage() {
         <DialogTitle>Recuperar senha</DialogTitle>
         <DialogContent>
           <Typography sx={{ mb: 2 }}>
-            Informe o e-mail cadastrado para receber o link de redefinição de senha:
+            Informe o e-mail cadastrado para enviarmos os informações de redefinição de senha
+            (o mundo nesse caos e você esquecendo senha)
           </Typography>
           <TextField
             fullWidth

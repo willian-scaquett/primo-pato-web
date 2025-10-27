@@ -121,7 +121,7 @@ useEffect(() => {
             mt: 6,
             p: 3,
             borderRadius: 2,
-            height: 460,
+            height: { xs: "auto", md: 460 },
             display: "flex",
             flexDirection: "column",
           }}
@@ -136,7 +136,7 @@ useEffect(() => {
             sx={{
               flex: 1,
               display: "flex",
-              flexDirection: "row",
+              flexDirection: { xs: "column", md: "row" },
               alignItems: "stretch",
               justifyContent: "space-between",
               gap: 2,
@@ -144,7 +144,9 @@ useEffect(() => {
           >
             <Box
               sx={{
-                flex: 2,
+                flex: { xs: 1, md: 2 },
+                minHeight: { xs: 400, md: "auto" },
+                height: { xs: 400, md: "auto" },
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -178,7 +180,7 @@ useEffect(() => {
                   </Typography>
                 </Box>
               ) : (
-                <ResponsiveContainer width="95%" height="90%">
+                <ResponsiveContainer width="100%" height={328}>
                   <PieChart>
                     <Pie
                       data={[
