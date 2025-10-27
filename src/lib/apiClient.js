@@ -89,6 +89,30 @@ export function loginUsuario(payload) {
   }, false);
 }
 
+export function esqueciMinhaSenha(payload) {
+  return fetchJson(`${API_BASE}/usuario/esqueci-senha`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  }, false);
+}
+
+export function eu() {
+  return fetchJson(`${API_BASE}/usuario/eu`);
+}
+
+export function mudarSenha(payload) {
+  return fetchJson(`${API_BASE}/usuario/mudar-senha`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function apagarUsuario() {
+  return fetchJson(`${API_BASE}/usuario/apagar`, {
+    method: "DELETE"
+  });
+}
+
 // ========================== API PAÍSES ==========================
 export function buscarPaises() {
   return fetchJson(`${API_BASE}/pais`);

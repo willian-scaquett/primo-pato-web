@@ -21,7 +21,8 @@
     "react-dom": "19.1.0",
     "react-input-mask": "^2.0.4",
     "react-leaflet": "^5.0.0",
-    "react-number-format": "^5.4.4"
+    "react-number-format": "^5.4.4",
+    "recharts": "^3.3.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

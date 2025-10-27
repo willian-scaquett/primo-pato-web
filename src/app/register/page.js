@@ -38,14 +38,22 @@ function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (submitting) return;
+
     if (!formData.fullName || !formData.email || !formData.password) {
       setSnack({ open: true, message: "Preencha nome, e-mail e senha.", severity: "error" });
       return;
     }
+
+    if (formData.password.length < 6) {
+      setSnack({ open: true, message: "A senha deve ter pelo menos 6 caracteres.", severity: "error" });
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setSnack({ open: true, message: "As senhas não conferem.", severity: "error" });
       return;
     }
+
     setSubmitting(true);
     try {
       const payload = {

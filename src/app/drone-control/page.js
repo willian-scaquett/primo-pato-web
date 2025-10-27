@@ -38,6 +38,7 @@ import {
   calculateFuelConsumption 
 } from './utils/calculations';
 import { formatDistance } from './utils/formatters';
+import { Icon } from '@iconify/react';
 
 function DroneControlContent() {
   const searchParams = useSearchParams();
@@ -351,6 +352,7 @@ function DroneControlContent() {
             variant="contained" 
             onClick={start} 
             disabled={!classification || loading || ducks.length === 0 || !selectedDuck || started} 
+            startIcon={<Icon icon="mdi:target" />}
           >
             Iniciar Missão
           </Button>

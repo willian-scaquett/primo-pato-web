@@ -12,31 +12,32 @@ import {
 import { Layout } from "../../components/Layout/Layout";
 import {
   Assessment as AssessmentIcon,
-  CheckCircle as CheckCircleIcon,
-  Warning as WarningIcon,
-  Info as InfoIcon
 } from "@mui/icons-material";
 import { Icon } from "@iconify/react";
-import { buscarEstatisticasPatos } from "../../lib/apiClient";
+import { buscarEstatisticasPatos, eu } from "../../lib/apiClient";
+import { Bar, BarChart, Cell, LabelList, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [capturedCounter, setCapturedCounter] = useState(0);
   const [notCapturedCounter, setNotCapturedCounter] = useState(0);
   const [ducksTotal, setDucksTotal] = useState(0);
+  const [scientificAvg, setScientificAvg] = useState(0);
+  const [paranormalAvg, setParanormalAvg] = useState(0);
+  const [userName, setUserName] = useState("");
 
-  useEffect(() => {
-    buscarEstatisticasPatos().then((list) => {
-      list.map((l) => {
-        if (l.capturado) {
-          setCapturedCounter(l.quantidade);
-        } else {
-          setNotCapturedCounter(l.quantidade);
-        }
-        setDucksTotal(ducksTotal + l.quantidade)
-      });
-    }).finally(setLoading(false));
-  }, []);
+useEffect(() => {
+  buscarEstatisticasPatos()
+    .then((response) => {
+      setCapturedCounter(response?.quantidadeCapturado);
+      setNotCapturedCounter(response?.quantidadeNaoCapturado);
+      setDucksTotal(response?.quantidadeCapturado + response?.quantidadeNaoCapturado);
+      setScientificAvg(response?.porcentagemGanhoCientifico);
+      setParanormalAvg(response?.porcentagemGanhoParanormal);
+    })
+    .finally(() => setLoading(false));
+  eu().then((response) => setUserName(response.message))
+}, []);
 
   const features = [
     {
@@ -73,7 +74,7 @@ function DashboardPage() {
           component="h1"
           sx={{ mb: 2, textAlign: "center" }}
         >
-          Bem-vindo ao Primo Pato
+          Bem-vindo(a), {userName?.split(" ")[0]}
         </Typography>
         <Typography
           variant="h6"
@@ -119,7 +120,10 @@ function DashboardPage() {
           sx={{
             mt: 6,
             p: 3,
-            borderRadius: 2
+            borderRadius: 2,
+            height: 460,
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           <Typography
@@ -128,59 +132,181 @@ function DashboardPage() {
           >
             Métricas de Captura
           </Typography>
-
-          {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-              <CircularProgress sx={{ color: "#00E0B7" }} />
-            </Box>
-          ) : (
-            <Grid 
-              container 
-              spacing={3} 
-              sx={{ 
-                display: 'flex', 
-                justifyContent: 'center',
-                alignItems: 'center',
-                textAlign: 'center'
+          <Box
+            sx={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "stretch",
+              justifyContent: "space-between",
+              gap: 2,
+            }}
+          >
+            <Box
+              sx={{
+                flex: 2,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
               }}
             >
-              {[ 
-                { count: capturedCounter, label: 'Patos Capturados', icon: <CheckCircleIcon sx={{ fontSize: 48, color: "#00E0B7", mb: 1 }} />, color: '#00E0B7', bg: 'rgba(0, 224, 183, 0.1)', border: '#00E0B7' },
-                { count: notCapturedCounter, label: 'Patos Não Capturados', icon: <WarningIcon sx={{ fontSize: 48, color: "#FFA500", mb: 1 }} />, color: '#FFA500', bg: 'rgba(255, 107, 107, 0.1)', border: '#FFA500' },
-                { count: ducksTotal, label: 'Total de Patos', icon: <InfoIcon sx={{ fontSize: 48, color: "#FFFFFF", mb: 1 }} />, color: '#fff', bg: 'rgba(255, 255, 255, 0.05)', border: '#B0B0B0' }
-              ].map((stat, index) => (
-                <Grid 
-                  item 
-                  xs={12} 
-                  md={4} 
-                  key={index} 
-                  sx={{ display: 'flex', justifyContent: 'center' }} 
+              {loading ? (
+                <CircularProgress sx={{ color: "#00E0B7" }} />
+              ) : ducksTotal === 0 ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "100%",
+                    color: "#B0B0B0",
+                    textAlign: "center",
+                  }}
                 >
-                  <Card
-                    sx={{
-                      textAlign: "center",
-                      background: stat.bg,
-                      border: `1px solid ${stat.border}`,
-                      width: '100%',
-                      minWidth: 250,
-                      mr: 0.5,
-                      ml: 0.5
-                    }}
+                  <Icon
+                    icon="mdi:duck-off"
+                    width="64"
+                    height="64"
+                    color="#555"
+                    style={{ marginBottom: 12 }}
+                  />
+                  <Typography variant="h6">Nenhum pato primordial cadastrado ainda :(</Typography>
+                  <Typography variant="body2">
+                    Vá registrar e capturar os patos! O mundo conta com sua ajuda!
+                  </Typography>
+                </Box>
+              ) : (
+                <ResponsiveContainer width="95%" height="90%">
+                  <PieChart>
+                    <Pie
+                      data={[
+                        { name: "Patos capturados", value: capturedCounter },
+                        { name: "Patos não capturados", value: notCapturedCounter },
+                      ]}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius="80%"
+                      label={({ name, value }) => `${name}: ${value}`}
+                    >
+                      <Cell fill="#00E0B7" />
+                      <Cell fill="#FFA500" />
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+
+              {!loading && (
+                <Typography
+                  variant="body2"
+                  sx={{
+                    position: "absolute",
+                    bottom: 8,
+                    width: "100%",
+                    textAlign: "center",
+                    color: "#B0B0B0",
+                  }}
+                >
+                  Total de patos registrados: <strong>{ducksTotal}</strong>
+                </Typography>
+              )}
+            </Box>
+
+            <Box
+              sx={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                gap: 3,
+              }}
+            >
+            <Card
+                sx={{
+                  flex: 1,
+                  background: "rgba(0, 224, 183, 0.1)",
+                  border: "1px solid #00E0B7",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  p: 1,
+                }}
+            >
+                <Typography variant="h6" sx={{ color: "#00E0B7", mb: 1 }}>
+                  Média de Ganho Científico
+                </Typography>
+                <ResponsiveContainer width="95%" height={100}>
+                  <BarChart
+                    data={[
+                      {
+                        name: "Ganho Científico",
+                        valor: Math.round(scientificAvg || 0),
+                      },
+                    ]}
+                    layout="vertical"
+                    margin={{ top: 5, right: 10, left: 10, bottom: 5 }}
                   >
-                    <CardContent>
-                      {stat.icon}
-                      <Typography variant="h4" sx={{ color: stat.color, mb: 1 }}>
-                        {stat.count}
-                      </Typography>
-                      <Typography variant="body1" sx={{ color: "#B0B0B0" }}>
-                        {stat.label}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          )}
+                    <XAxis type="number" domain={[0, 100]} hide />
+                    <YAxis type="category" dataKey="name" hide />
+                    <Bar dataKey="valor" fill="#00E0B7" radius={[5, 5, 5, 5]}>
+                      <LabelList
+                        dataKey="valor"
+                        position="insideCenter"
+                        fill="#0A1C1C;"
+                        fontWeight="bold"
+                        formatter={(value) => value ? `${value}%` : ''}
+                      />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Card>
+
+              <Card
+                sx={{
+                  flex: 1,
+                  background: "rgba(155, 89, 182, 0.1)",
+                  border: "1px solid #9B59B6",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  p: 1,
+                }}
+              >
+                <Typography variant="h6" sx={{ color: "#9B59B6", mb: 1 }}>
+                  Média de Ganho Paranormal
+                </Typography>
+                <ResponsiveContainer width="95%" height={100}>
+                  <BarChart
+                    data={[
+                      {
+                        name: "Ganho Paranormal",
+                        valor: Math.round(paranormalAvg || 0),
+                      },
+                    ]}
+                    layout="vertical"
+                    margin={{ top: 5, right: 10, left: 10, bottom: 5 }}
+                  >
+                    <XAxis type="number" domain={[0, 100]} hide />
+                    <YAxis type="category" dataKey="name" hide />
+                    <Bar dataKey="valor" fill="#9B59B6" radius={[5, 5, 5, 5]}>
+                      <LabelList
+                        dataKey="valor"
+                        position="insideRight"
+                        fill="#0A1C1C"
+                        fontWeight="bold"
+                        formatter={(value) => value ? `${value}%` : ''}
+                      />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Card>
+            </Box>
+          </Box>
         </Paper>
       </Box>
     </Layout>

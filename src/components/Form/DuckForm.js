@@ -19,6 +19,7 @@ import {
   CircularProgress
 } from '@mui/material';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import SaveIcon from '@mui/icons-material/Save';
 
 const CustomAutocomplete = ({ value, disabled, onChange, options, label, placeholder, sx = {} }) => {
   const filter = createFilterOptions();
@@ -635,6 +636,7 @@ export default function DuckForm({
                 type="submit"
                 variant="contained"
                 disabled={submitting || !payloadComplete}
+                startIcon={<SaveIcon />}
               >
                 {submitting ? 'Salvando...' : submitButtonText}
               </Button>

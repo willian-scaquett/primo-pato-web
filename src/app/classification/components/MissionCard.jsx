@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Card, CardContent, Typography, LinearProgress, Button } from "@mui/material";
 import { formatCurrency, formatDistance } from "../utils/formatters";
+import { Icon } from "@iconify/react";
 
 export const MissionCard = ({
   loading,
@@ -77,6 +78,7 @@ export const MissionCard = ({
         variant="contained"
         onClick={onCapture}
         disabled={isCaptured || !selectedDuck}
+        startIcon={<Icon icon="mdi:target-arrow"/>}
       >
         Capturar
       </Button>

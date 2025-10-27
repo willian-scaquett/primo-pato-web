@@ -12,10 +12,14 @@ import {
   Container,
   Snackbar,
   Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { Layout } from "../../components/Layout/Layout";
 import { useRouter } from "next/navigation";
-import { loginUsuario } from "../../lib/apiClient";
+import { loginUsuario, esqueciMinhaSenha } from "../../lib/apiClient";
 import Image from "next/image";
 
 function LoginPage() {
@@ -23,6 +27,10 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogEmail, setDialogEmail] = useState("");
+  const [dialogSubmitting, setDialogSubmitting] = useState(false);
+
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -32,20 +40,42 @@ function LoginPage() {
       setSnack({ open: true, message: "Informe e-mail e senha.", severity: "error" });
       return;
     }
+
     setSubmitting(true);
     try {
       const payload = { usuario: email, senha: password };
       const data = await loginUsuario(payload);
-      const token = (typeof data === 'string') ? data : (data?.token || data?.accessToken || data);
+      const token = (typeof data === "string") ? data : (data?.token || data?.accessToken || data);
+
       if (token) {
         sessionStorage.setItem("auth_token", String(token));
+        setSnack({ open: true, message: "Login realizado com sucesso.", severity: "success" });
+        setTimeout(() => router.push("/dashboard"), 500);
+      } else {
+        throw new Error("invalid");
       }
-      setSnack({ open: true, message: "Login realizado com sucesso.", severity: "success" });
-      setTimeout(() => router.push("/dashboard"), 500);
-    } catch (err) {
-      setSnack({ open: true, message: err.message || "Falha no login.", severity: "error" });
+    } catch {
+      setSnack({ open: true, message: "Usuário ou senha inválidos.", severity: "error" });
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!dialogEmail) {
+      setSnack({ open: true, message: "Informe um e-mail válido.", severity: "error" });
+      return;
+    }
+
+    setDialogSubmitting(true);
+    try {
+      await esqueciMinhaSenha({ email: dialogEmail });
+      setSnack({ open: true, message: "E-mail de recuperação enviado (se não encontrá-lo, verifique o spam)", severity: "success" });
+      setDialogOpen(false);
+    } catch {
+      setSnack({ open: true, message: "Usuário não encontrado.", severity: "error" });
+    } finally {
+      setDialogSubmitting(false);
     }
   };
 
@@ -55,14 +85,13 @@ function LoginPage() {
         sx={{
           position: "fixed",
           inset: 0,
-          zIndex: 0, 
+          zIndex: 0,
           backgroundImage: 'url("/pato-bkg.jpeg")',
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
           backgroundSize: "cover",
         }}
       />
-
       <Box
         sx={{
           position: "fixed",
@@ -98,30 +127,17 @@ function LoginPage() {
         >
           <CardContent sx={{ p: 4 }}>
             <Box sx={{ textAlign: "center", mb: 4 }}>
-              <Image
-                src="/logo.png"
-                alt="Logo"
-                width={70}
-                height={70}
-                priority
-              />
-              <Typography
-                variant="h4"
-                component="h1"
-                sx={{
-                  fontWeight: "bold",
-                  color: "#FFFFFF",
-                  mb: 1,
-                }}
-              >
+              <Image src="/logo.png" alt="Logo" width={70} height={70} priority />
+              <Typography variant="h4" component="h1" sx={{ fontWeight: "bold", color: "#FFFFFF", mb: 1 }}>
                 PRIMO PATO
               </Typography>
             </Box>
 
             <Box component="form" onSubmit={handleSubmit}>
-                <Typography variant="h6" sx={{ textAlign: "center", color: "#00E0B7", fontWeight: 500 }}>
-                  Faça login para capturar patos primordiais
-                </Typography>
+              <Typography variant="h6" sx={{ textAlign: "center", color: "#00E0B7", fontWeight: 500 }}>
+                Faça login para capturar patos primordiais
+              </Typography>
+
               <TextField
                 fullWidth
                 label="E-mail"
@@ -131,6 +147,8 @@ function LoginPage() {
                 margin="normal"
                 required
                 sx={{ mb: 2 }}
+                onInvalid={(e) => e.target.setCustomValidity("Por favor, insira um endereço de e-mail válido.")}
+                onInput={(e) => e.target.setCustomValidity("")}
               />
 
               <TextField
@@ -141,8 +159,24 @@ function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 margin="normal"
                 required
-                sx={{ mb: 3 }}
               />
+
+              <Box sx={{ textAlign: "right", mb: 3 }}>
+                <Button
+                  onClick={() => {
+                    setDialogEmail(email);
+                    setDialogOpen(true);
+                  }}
+                  sx={{
+                    color: "#00E0B7",
+                    textTransform: "none",
+                    fontSize: "0.85rem",
+                    "&:hover": { textDecoration: "underline", background: "none" },
+                  }}
+                >
+                  Esqueci minha senha
+                </Button>
+              </Box>
 
               <Button
                 type="submit"
@@ -161,8 +195,15 @@ function LoginPage() {
 
               <Box sx={{ textAlign: "center" }}>
                 <Typography variant="body2" sx={{ color: "#B0B0B0" }}>
-                  Não tem uma conta? {" "}
-                  <Link href="/register" sx={{ color: "#00E0B7", textDecoration: "none", "&:hover": { textDecoration: "underline" } }}>
+                  Não tem uma conta?{" "}
+                  <Link
+                    href="/register"
+                    sx={{
+                      color: "#00E0B7",
+                      textDecoration: "none",
+                      "&:hover": { textDecoration: "underline" },
+                    }}
+                  >
                     Crie uma
                   </Link>
                 </Typography>
@@ -171,11 +212,50 @@ function LoginPage() {
           </CardContent>
         </Card>
       </Container>
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack(s => ({ ...s, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert onClose={() => setSnack(s => ({ ...s, open: false }))} severity={snack.severity} sx={{ width: '100%' }}>
+
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={3000}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          severity={snack.severity}
+          sx={{ width: "100%" }}
+        >
           {snack.message}
         </Alert>
       </Snackbar>
+
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+        <DialogTitle>Recuperar senha</DialogTitle>
+        <DialogContent>
+          <Typography sx={{ mb: 2 }}>
+            Informe o e-mail cadastrado para receber o link de redefinição de senha:
+          </Typography>
+          <TextField
+            fullWidth
+            type="email"
+            label="E-mail"
+            value={dialogEmail}
+            onChange={(e) => setDialogEmail(e.target.value)}
+            autoFocus
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogOpen(false)} sx={{ color: "#FFFFFF" }}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleForgotPassword}
+            disabled={dialogSubmitting}
+            sx={{ color: "#00E0B7" }}
+          >
+            {dialogSubmitting ? "Enviando..." : "Confirmar"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Layout>
   );
 }
