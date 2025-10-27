@@ -91,7 +91,6 @@ Autorização: quando presente, o token é enviado em `Authorization: Bearer <to
 - `‎/ducks/[id]/edit` — edição dos dados do pato; mesmo layout do formulário com pré‑preenchimento.
 - `‎/classification` — seleciona um pato e exibe classificação (defesa/arma/rede recomendadas, custo, risco, ganhos, distância). Botão “Capturar pato” direciona para o mini‑game.
 - `‎/drone-control` — mini‑game de captura baseado nas recomendações da classificação; sucesso marca o pato como capturado na API e atualiza a lista de não capturados.
-- `‎/monitoring` — tela demonstrativa de monitoramento (dados mockados) para futura expansão.
 
 
 ## 🎨 Tema e UI
