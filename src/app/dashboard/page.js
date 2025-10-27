@@ -257,7 +257,7 @@ useEffect(() => {
                     <Bar dataKey="valor" fill="#00E0B7" radius={[5, 5, 5, 5]}>
                       <LabelList
                         dataKey="valor"
-                        position="insideCenter"
+                        position={(value) => value < 15 ? 'right' : 'insideRight'}
                         fill="#0A1C1C;"
                         fontWeight="bold"
                         formatter={(value) => value ? `${value}%` : ''}
@@ -298,7 +298,7 @@ useEffect(() => {
                     <Bar dataKey="valor" fill="#9B59B6" radius={[5, 5, 5, 5]}>
                       <LabelList
                         dataKey="valor"
-                        position="insideRight"
+                        position={(value) => value < 15 ? 'right' : 'insideRight'}
                         fill="#0A1C1C"
                         fontWeight="bold"
                         formatter={(value) => value ? `${value}%` : ''}

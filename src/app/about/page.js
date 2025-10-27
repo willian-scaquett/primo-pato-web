@@ -28,7 +28,7 @@ import {
 } from "@mui/material";
 import { Layout } from "../../components/Layout/Layout";
 
-export default function About() {
+export default function AboutPage() {
   const [expanded, setExpanded] = useState(null);
 
   const toggleExpand = (id) => {
