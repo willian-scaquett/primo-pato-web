@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const API_TARGET = process.env.API_URL;
+const API_TARGET = process.env.NEXT_PUBLIC_API_URL;
 
 export async function GET(request, { params }) {
   const resolvedParams = await params;
